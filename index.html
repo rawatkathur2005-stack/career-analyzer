@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Analyzer - Elevate Your Resume & Discover Career Paths</title>
+    <!-- SEO Tags -->
+    <meta name="description"
+        content="Analyze your resume for ATS optimization, identify career path matches, optimize bullet points, and prepare for interviews with our interactive AI Career Coach.">
+    <meta name="keywords"
+        content="career analyzer, resume analyzer, ATS grader, resume builder, interview prep, skill roadmap">
+
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Loading Overlay for PDF parsing -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <h3 style="font-weight: 600; letter-spacing: 0.5px;">Parsing Resume Structure...</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Extracting text blocks and validating formatting
+            rules</p>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="logo-text">Career<span>Analyzer</span></div>
+        </div>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="upload">
+                <i class="fas fa-cloud-upload-alt"></i> Upload
+            </button>
+            <button class="tab-btn" data-tab="dashboard" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="pathfinder" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-map-signs"></i> Pathfinder
+            </button>
+            <button class="tab-btn" data-tab="enhancer" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-magic"></i> Enhancer
+            </button>
+            <button class="tab-btn" data-tab="interview" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-comments"></i> Interview Coach
+            </button>
+            <button class="tab-btn" data-tab="video" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-video"></i> Video Interview
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Workspace -->
+    <main>
+
+        <!-- Tab 1: Upload & Parse -->
+        <section id="upload-tab" class="tab-content active">
+            <div class="uploader-container">
+
+                <!-- Left Side: Interactive Upload Dropzone -->
+                <div class="glass-card uploader-main" id="dropzone">
+                    <div class="upload-icon-wrapper">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Scan Your Resume</h3>
+                    <p>Drag and drop your PDF or TXT file here, or click to browse files</p>
+                    <input type="file" id="file-input" style="display: none;" accept=".pdf,.txt">
+
+                    <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; width: 100%;">
+                        <button class="btn-gradient" id="browse-btn">
+                            <i class="fas fa-file-pdf"></i> Select File
+                        </button>
+                        <button class="btn-secondary" id="demo-resume-btn" style="border-radius: 30px;">
+                            <i class="fas fa-user-tie"></i> Load Demo Resume
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side: Info Panel -->
+                <div class="uploader-side">
+                    <div class="glass-card info-box">
+                        <h4><i class="fas fa-shield-alt"></i> ATS Screening Check</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Standard formats: Only upload clean PDF or TXT.</li>
+                            <li><i class="fas fa-check"></i> File sizes: Up to 5MB files supported.</li>
+                            <li><i class="fas fa-check"></i> Local Privacy: Resume parsing runs entirely inside your
+                                browser.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card info-box">
+                        <h4><i class="fas fa-bullseye"></i> Key Scans Performed</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Structure & Formatting sections checks.</li>
+                            <li><i class="fas fa-check"></i> Quantitative impacts (numbers, %, financial metrics).</li>
+                            <li><i class="fas fa-check"></i> Action-verb ratio analysis vs. passive voice.</li>
+                            <li><i class="fas fa-check"></i> Contact details and online portfolio linkage.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Section: Text Copy-Paste Area -->
+            <div class="glass-card paste-container">
+                <h4 class="card-title" style="margin-bottom: 0.5rem;"><i class="fas fa-paste"></i> Or Paste Resume Text
+                </h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">No file on hand?
+                    Paste your plain-text resume block below to execute the parser.</p>
+                <textarea id="text-input" class="textarea-input"
+                    placeholder="Paste resume contents here... (Include contact, summary, skills, experience details)"></textarea>
+                <button id="parse-text-btn" class="btn-gradient">
+                    <i class="fas fa-search"></i> Analyze Resume Text
+                </button>
+            </div>
+        </section>
+
+        <!-- Tab 2: Resume Dashboard -->
+        <section id="dashboard-tab" class="tab-content">
+            <div class="dashboard-grid">
+
+                <!-- Left: Overall Score Card -->
+                <div class="glass-card score-card">
+                    <h4 class="card-title" style="margin-bottom: 1.5rem;"><i class="fas fa-star"></i> Resume Score</h4>
+
+                    <div class="score-circle-container">
+                        <svg class="score-circle-svg" viewBox="0 0 180 180">
+                            <defs>
+                                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="var(--primary)" />
+                                    <stop offset="100%" stop-color="var(--secondary)" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="score-circle-bg" cx="90" cy="90" r="80" />
+                            <circle id="score-circle-fill" class="score-circle-fill" cx="90" cy="90" r="80" />
+                        </svg>
+                        <div id="score-value" class="score-value">0</div>
+                    </div>
+
+                    <div id="score-text-val" class="score-text">Calculating...</div>
+                    <p id="score-desc-val" class="score-desc"></p>
+
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div id="stat-skills-count" class="stat-val">0</div>
+                            <div class="stat-lbl">Skills Found</div>
+                        </div>
+                        <div class="stat-item">
+                            <div id="stat-verbs-count" class="stat-val">0</div>
+                            <div class="stat-lbl">Power Verbs</div>
+                        </div>
+                        <div class="stat-item">
+                            <div id="stat-metrics-count" class="stat-val">0</div>
+                            <div class="stat-lbl">Impact Metrics</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-val" style="color: var(--accent);"><i class="fas fa-robot"></i></div>
+                            <div class="stat-lbl">ATS Check</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Analysis Checklist (Weak points + Positives) -->
+                <div class="analysis-sections">
+                    <div class="glass-card" style="padding: 1.75rem;">
+                        <h4 class="card-title" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i>
+                            Weak Points Identified</h4>
+                        <div class="weakness-list" id="weakness-list-container">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 1.75rem;">
+                        <h4 class="card-title" style="color: var(--success);"><i class="fas fa-check-circle"></i>
+                            Strengths Detected</h4>
+                        <div class="positives-list" id="positives-list-container">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Tab 3: Career Pathfinder -->
+        <section id="pathfinder-tab" class="tab-content">
+            <div class="pathfinder-container">
+
+                <!-- Left Side: Role List Matched -->
+                <div class="glass-card">
+                    <h4 class="card-title"><i class="fas fa-briefcase"></i> Job Role Matches</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                        Matches calculated using skill tags detected in your resume relative to core job profiles.
+                    </p>
+                    <div class="roles-list" id="roles-list-container">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Right Side: Details View -->
+                <div class="glass-card role-details-container">
+                    <div>
+                        <span id="detail-role-category"
+                            style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--secondary); font-weight:700;">CATEGORY</span>
+                        <h3 id="detail-role-title" style="font-size:1.75rem; margin-top:0.25rem; font-weight:800;">
+                            Select a role</h3>
+                        <p id="detail-role-desc"
+                            style="color: var(--text-secondary); margin-top: 0.75rem; font-size:0.95rem;"></p>
+                    </div>
+
+                    <div>
+                        <h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.75rem;"><i
+                                class="fas fa-tools"></i> Skill Competence Checklist</h4>
+                        <div class="skill-tags" id="detail-role-skills">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.75rem;"><i
+                                class="fas fa-road"></i> Learning Roadmap & Study Guide</h4>
+                        <div id="detail-roadmap-steps">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Tab 4: Resume Enhancer -->
+        <section id="enhancer-tab" class="tab-content">
+            <div class="enhancer-grid">
+
+                <!-- Left Side: Input Panel -->
+                <div class="glass-card enhancer-input-panel">
+                    <div class="panel-header">
+                        <span>Current Bullet Point / Achievement</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">ATS Grade
+                            Optimizer</span>
+                    </div>
+                    <textarea id="enhance-input" class="textarea-enhance"
+                        placeholder="e.g., responsible for web page layouts, worked on backend, helped fix styling bugs..."></textarea>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <button id="enhance-btn" class="btn-gradient">
+                            <i class="fas fa-magic"></i> Optimize Bullet Point
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side: Optimized Output Panel -->
+                <div class="glass-card enhancer-output-panel">
+                    <div class="panel-header">
+                        <span>Enhanced Output Recommendation</span>
+                        <span style="font-size: 0.8rem; color: var(--success); font-weight: 600;"><i
+                                class="fas fa-shield-virus"></i> ATS Compliant</span>
+                    </div>
+
+                    <!-- Placeholder state -->
+                    <div id="enhance-placeholder" class="enhance-output-placeholder">
+                        <i class="fas fa-keyboard"></i>
+                        <h5>Awaiting input</h5>
+                        <p style="font-size: 0.85rem; max-width: 300px; margin-top: 0.25rem;">Enter a weak resume bullet
+                            point on the left and hit Optimize to generate a high-impact version.</p>
+                    </div>
+
+                    <!-- Result state -->
+                    <div id="enhanced-result" class="enhanced-result-container">
+                        <div class="enhanced-diff-box">
+                            <div class="before" id="diff-before">Before</div>
+                            <div class="after" id="diff-after">After</div>
+                        </div>
+
+                        <div class="tips-box">
+                            <h6><i class="fas fa-lightbulb"></i> Optimization Rationale</h6>
+                            <p id="enhance-tip" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
+                        </div>
+
+                        <div class="enhancer-actions" style="margin-top: 1.5rem;">
+                            <button id="enhance-copy-btn" class="btn-gradient" style="flex:1;">
+                                <i class="fas fa-copy"></i> Copy to Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom: Action Verb Quick Dictionary -->
+                <div class="glass-card verbs-dictionary">
+                    <h4 class="card-title" style="font-size:1.1rem; margin-bottom:0.25rem;"><i class="fas fa-book"></i>
+                        Interactive Power Verb Dictionary</h4>
+                    <p style="color:var(--text-secondary); font-size:0.85rem;">Click any action verb below to insert it
+                        at your cursor in the optimizer input.</p>
+
+                    <div class="verbs-grid">
+                        <div class="verb-category">
+                            <h6>LEADERSHIP / MANAGEMENT</h6>
+                            <div class="verb-chips">
+                                <span class="verb-chip">Led</span>
+                                <span class="verb-chip">Directed</span>
+                                <span class="verb-chip">Managed</span>
+                                <span class="verb-chip">Orchestrated</span>
+                                <span class="verb-chip">Coordinated</span>
+                                <span class="verb-chip">Supervised</span>
+                            </div>
+                        </div>
+                        <div class="verb-category">
+                            <h6>DEVELOPMENT / CREATION</h6>
+                            <div class="verb-chips">
+                                <span class="verb-chip">Created</span>
+                                <span class="verb-chip">Developed</span>
+                                <span class="verb-chip">Designed</span>
+                                <span class="verb-chip">Built</span>
+                                <span class="verb-chip">Implemented</span>
+                                <span class="verb-chip">Engineered</span>
+                            </div>
+                        </div>
+                        <div class="verb-category">
+                            <h6>IMPROVEMENT / METRICS</h6>
+                            <div class="verb-chips">
+                                <span class="verb-chip">Optimized</span>
+                                <span class="verb-chip">Improved</span>
+                                <span class="verb-chip">Reduced</span>
+                                <span class="verb-chip">Increased</span>
+                                <span class="verb-chip">Streamlined</span>
+                                <span class="verb-chip">Accelerated</span>
+                            </div>
+                        </div>
+                        <div class="verb-category">
+                            <h6>RESEARCH / ANALYSIS</h6>
+                            <div class="verb-chips">
+                                <span class="verb-chip">Analyzed</span>
+                                <span class="verb-chip">Researched</span>
+                                <span class="verb-chip">Investigated</span>
+                                <span class="verb-chip">Evaluated</span>
+                                <span class="verb-chip">Examined</span>
+                                <span class="verb-chip">Audited</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Tab 5: Interview Prep -->
+        <section id="interview-tab" class="tab-content">
+            <div class="interview-coach-container">
+
+                <!-- Left Side: Interactive Chat Terminal -->
+                <div class="chat-panel">
+                    <div class="chat-messages" id="chat-messages-container">
+                        <div style="text-align: center; color: var(--text-muted); margin-top: 4rem; padding: 2rem;">
+                            <i class="fas fa-comments"
+                                style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-glow);"></i>
+                            <h5>Awaiting Session Start</h5>
+                            <p style="font-size: 0.85rem; max-width: 300px; margin: 0.5rem auto 0;">Click 'Start Mock
+                                Interview' on the right to trigger resume-specific screening questions.</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input type="text" id="coach-chat-input" class="chat-input"
+                            placeholder="Type your interview answer..." disabled>
+                        <button id="coach-send-btn" class="chat-send-btn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side: Instructions & Controller -->
+                <div class="coach-sidebar">
+                    <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+                        <h4 class="card-title" style="justify-content: center; font-size: 1.2rem;"><i
+                                class="fas fa-robot"></i> Career AI Coach</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            We generate core technical and behavioral questions by analyzing the skills and projects
+                            parsed from your resume.
+                        </p>
+                        <button id="start-interview-btn" class="btn-gradient" style="width: 100%;">
+                            <i class="fas fa-play"></i> Start Mock Interview
+                        </button>
+                    </div>
+
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h4 class="card-title" style="font-size: 1.1rem;"><i class="fas fa-graduation-cap"></i>
+                            Interview Tips</h4>
+                        <ul style="list-style: none; color: var(--text-secondary); font-size: 0.85rem;">
+                            <li style="margin-bottom: 0.75rem; display: flex; gap: 0.5rem;">
+                                <i class="fas fa-star" style="color: var(--warning); margin-top: 4px;"></i>
+                                <div>
+                                    <strong>STAR Method:</strong> Structure your answers: Situation, Task, Action, and
+                                    Result.
+                                </div>
+                            </li>
+                            <li style="margin-bottom: 0.75rem; display: flex; gap: 0.5rem;">
+                                <i class="fas fa-star" style="color: var(--warning); margin-top: 4px;"></i>
+                                <div>
+                                    <strong>Quantify Impact:</strong> Do not just state tasks. Say: "...resulting in 30%
+                                    speedups" or "...saving 10 engineering hours".
+                                </div>
+                            </li>
+                            <li style="display: flex; gap: 0.5rem;">
+                                <i class="fas fa-star" style="color: var(--warning); margin-top: 4px;"></i>
+                                <div>
+                                    <strong>Reference Tools:</strong> Explicitly mention tools from your resume stack
+                                    (e.g. Git, React, SQL) to show command.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Tab 6: AI Video Interview -->
+        <section id="video-tab" class="tab-content">
+            <div class="video-interview-container" id="video-setup-container">
+
+                <!-- Left: Webcam Panel -->
+                <div class="webcam-card">
+                    <div class="webcam-feed-container">
+                        <video id="webcam-stream" class="webcam-stream" autoplay muted playsinline></video>
+
+                        <!-- Fallback box when webcam not active -->
+                        <div id="webcam-fallback" class="webcam-fallback">
+                            <i class="fas fa-video-slash"></i>
+                            <h5>Camera Feed Inactive</h5>
+                            <p style="font-size: 0.85rem; max-width: 280px;">Allow camera permissions after starting the
+                                mock video session.</p>
+                        </div>
+
+                        <!-- AI scanning mesh indicators -->
+                        <div id="ai-tracking-overlay" class="ai-tracking-overlay">
+                            <div class="scan-bar"></div>
+                            <div class="face-mesh-box" id="face-box">
+                                <!-- Dots indicating facial tracker markers -->
+                                <span class="tracking-dot" style="top: 30px; left: 40px;"></span>
+                                <span class="tracking-dot" style="top: 30px; left: 110px;"></span>
+                                <span class="tracking-dot" style="top: 75px; left: 77px;"></span>
+                                <span class="tracking-dot" style="top: 110px; left: 50px;"></span>
+                                <span class="tracking-dot" style="top: 110px; left: 100px;"></span>
+                            </div>
+                        </div>
+
+                        <!-- Speech Audio waveform representation -->
+                        <div class="waveform-canvas-container" id="waveform-wrap" style="display:none;">
+                            <canvas id="waveform-canvas" class="waveform-canvas"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry readouts -->
+                    <div class="telemetry-container">
+                        <div class="telemetry-item">
+                            <div class="telemetry-label">Eye Contact</div>
+                            <div class="telemetry-value-row">
+                                <span id="telemetry-eye-val" class="telemetry-value">95%</span>
+                                <span id="telemetry-eye-badge"
+                                    class="telemetry-status-badge status-optimal">Optimal</span>
+                            </div>
+                            <div class="telemetry-bar-bg">
+                                <div id="telemetry-eye-bar" class="telemetry-bar-fill" style="width: 95%;"></div>
+                            </div>
+                        </div>
+                        <div class="telemetry-item">
+                            <div class="telemetry-label">Pacing</div>
+                            <div class="telemetry-value-row">
+                                <span id="telemetry-pace-val" class="telemetry-value">130 WPM</span>
+                                <span id="telemetry-pace-badge"
+                                    class="telemetry-status-badge status-optimal">Normal</span>
+                            </div>
+                            <div class="telemetry-bar-bg">
+                                <div id="telemetry-pace-bar" class="telemetry-bar-fill"
+                                    style="width: 70%; background: var(--secondary);"></div>
+                            </div>
+                        </div>
+                        <div class="telemetry-item">
+                            <div class="telemetry-label">Speech Volume</div>
+                            <div class="telemetry-value-row">
+                                <span id="telemetry-volume-val" class="telemetry-value">48 dB</span>
+                                <span id="telemetry-volume-badge"
+                                    class="telemetry-status-badge status-optimal">Good</span>
+                            </div>
+                            <div class="telemetry-bar-bg">
+                                <div id="telemetry-volume-bar" class="telemetry-bar-fill"
+                                    style="width: 50%; background: var(--accent);"></div>
+                            </div>
+                        </div>
+                        <div class="telemetry-item">
+                            <div class="telemetry-label">Body Posture</div>
+                            <div class="telemetry-value-row">
+                                <span id="telemetry-posture-val" class="telemetry-value">92%</span>
+                                <span id="telemetry-posture-badge"
+                                    class="telemetry-status-badge status-optimal">Stable</span>
+                            </div>
+                            <div class="telemetry-bar-bg">
+                                <div id="telemetry-posture-bar" class="telemetry-bar-fill"
+                                    style="width: 92%; background: var(--success);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Control Sidebar -->
+                <div class="video-coaching-sidebar">
+                    <div class="glass-card question-prompt-card">
+                        <div>
+                            <div class="prompt-hdr">Question Prompt</div>
+                            <h3 id="video-prompt-text" class="prompt-txt">Click 'Start Video Session' below to begin. We
+                                will generate questions based on your resume qualifications.</h3>
+                        </div>
+
+                        <div id="video-recording-indicator" class="recording-indicator" style="display:none;">
+                            <i class="fas fa-circle" style="color: var(--danger); font-size: 0.75rem;"></i> LIVE
+                            RECORDING ACTIVE
+                        </div>
+
+                        <div class="video-control-row">
+                            <button id="video-start-btn" class="btn-gradient" style="flex:1;">
+                                <i class="fas fa-play"></i> Start Video Session
+                            </button>
+                            <button id="video-record-btn" class="btn-secondary" style="flex:1; display:none;">
+                                <i class="fas fa-microphone"></i> Record Answer
+                            </button>
+                            <button id="video-next-btn" class="btn-gradient" style="flex:1; display:none;">
+                                Next Question <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.75rem;"><i
+                                class="fas fa-video"></i> AI Behavior Analysis</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5;">
+                            Our local browser model scans your posture coordinates and speech metrics to help you align
+                            with premium interviewing standards.
+                        </p>
+                        <ul
+                            style="list-style:none; font-size:0.8rem; color:var(--text-secondary); margin-top:0.75rem; display:flex; flex-direction:column; gap:0.5rem;">
+                            <li><i class="fas fa-check" style="color: var(--secondary); margin-right:4px;"></i> Keep
+                                your camera eye-level.</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary); margin-right:4px;"></i> Speak
+                                clearly without excessive filler words (um, like, er).</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary); margin-right:4px;"></i> Maintain
+                                steady eye contact directly at your camera lens.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Session Analysis Scorecard Card (spans full width, starts hidden) -->
+            <div class="glass-card post-session-card" id="post-session-card">
+                <h4 class="card-title" style="color: var(--secondary);"><i class="fas fa-chart-line"></i> AI Video
+                    Analysis Report</h4>
+                <p style="color: var(--text-secondary); font-size:0.9rem;">Review your visual posture, verbal velocity,
+                    and focus feedback points below.</p>
+
+                <div class="post-session-grid">
+                    <!-- Left: Overall Circle score -->
+                    <div class="post-score-panel">
+                        <div class="post-score-circle" id="post-overall-score">88</div>
+                        <h5 style="font-weight:700; font-size:1.2rem;">AI Behavioral Score</h5>
+                        <p style="color: var(--text-secondary); font-size:0.8rem; margin-top:0.25rem;">Based on verbal
+                            and visual metrics</p>
+                        <button id="restart-video-btn" class="btn-secondary" style="margin-top: 1.5rem; width: 100%;">
+                            <i class="fas fa-undo"></i> Retry Interview
+                        </button>
+                    </div>
+
+                    <!-- Right: Diagnostic details progress lines -->
+                    <div class="post-charts-panel">
+                        <div class="chart-row">
+                            <div class="chart-header-row">
+                                <span>Eye Contact Stability</span>
+                                <span id="post-eye-val" style="color:var(--secondary); font-weight:700;">91%</span>
+                            </div>
+                            <div class="chart-progress-bg">
+                                <div id="post-eye-bar" class="chart-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-row">
+                            <div class="chart-header-row">
+                                <span>Speaking Pace (Ideal: 120-150 WPM)</span>
+                                <span id="post-pace-val" style="color:var(--secondary); font-weight:700;">85%</span>
+                            </div>
+                            <div class="chart-progress-bg">
+                                <div id="post-pace-bar" class="chart-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-row">
+                            <div class="chart-header-row">
+                                <span>Posture Centered State</span>
+                                <span id="post-posture-val" style="color:var(--secondary); font-weight:700;">89%</span>
+                            </div>
+                            <div class="chart-progress-bg">
+                                <div id="post-posture-bar" class="chart-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-row">
+                            <div class="chart-header-row">
+                                <span>Filler Word Suppression (um, like, er)</span>
+                                <span id="post-filler-val" style="color:var(--secondary); font-weight:700;">95%</span>
+                            </div>
+                            <div class="chart-progress-bg">
+                                <div id="post-filler-bar" class="chart-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagnostics-feedback-box">
+                    <h5><i class="fas fa-lightbulb"></i> Actionable Coaching Recommendations</h5>
+                    <ul id="post-feedback-list">
+                        <!-- Rendered dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Career Analyzer. Built client-side for absolute privacy.</p>
+    </footer>
+
+    <!-- PDF.js CDN libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // Initialize PDF.js worker
+        if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        }
+    </script>
+
+    <!-- Main Application Script -->
+    <script src="app.js"></script>
+</body>
+
+</html>
